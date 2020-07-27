@@ -2,6 +2,7 @@ import ctypes
 from collections import OrderedDict
 
 from .utils import check_name_dup, fetch_fields, get_pack_factor
+from .parse_declaration import parse_declaration
 
 
 class MetaRawStruct(type(ctypes.Structure)):
@@ -59,3 +60,13 @@ class RawStruct(metaclass=MetaRawStruct):
     @classmethod
     def unpack(cls, buf):
         return cls.from_buffer_copy(buf)
+
+    @staticmethod
+    def from_declaration(declaration, pack=None):
+        struct_name, fields = parse_declaration(declaration)
+        attrs = dict()
+        attrs['_fields_'] = fields
+        if pack is not None:
+            attrs['_pack_'] = pack
+        cls = type(struct_name, (RawStruct, ), attrs)
+        return cls

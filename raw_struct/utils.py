@@ -6,7 +6,8 @@ _ctype_types = type(ctypes.c_uint8), type(ctypes.c_uint8 * 2)  # element, array
 
 def fetch_fields(bases, attrs):
     """ собрать описание полей из базовых классов и атрибутов """
-    fields = []
+    fields = attrs.pop('_fields_', [])
+
     for base in bases:
         fields.extend(getattr(base, '_fields_', []))
         for n, v in base.__dict__.items():
