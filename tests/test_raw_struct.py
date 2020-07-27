@@ -102,6 +102,11 @@ def test_hash():
         _pack_ = 1
         s1 = ctypes.c_uint8
 
+    class S11(RawStruct):
+        _pack_ = 1
+        s1 = ctypes.c_uint8
+
+
     class S2(RawStruct):
         _pack_ = 1
         s2 = ctypes.c_uint32
@@ -121,6 +126,11 @@ def test_hash():
     sc3 = S1(s1=1)
     assert hash(sc1) == hash(sc3)
     assert hash(sc1) != hash(sc2)
+
+    sc11 = S11(s1=1)
+    assert hash(sc1) != hash(sc11)
+    assert hash(sc2) != hash(sc11)
+    assert hash(sc3) != hash(sc11)
 
     ci1 = CI(line_count=1, len_point=10.0)
     ci2 = CI(line_count=1, len_point=10.01)
