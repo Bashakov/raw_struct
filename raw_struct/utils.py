@@ -9,6 +9,9 @@ def fetch_fields(bases, attrs):
     fields = []
     for base in bases:
         fields.extend(getattr(base, '_fields_', []))
+        for n, v in base.__dict__.items():
+            if callable(v) or isinstance(v, classmethod):
+                attrs[n] = v
 
     for n, t in attrs.items():
         if isinstance(t, _ctype_types):

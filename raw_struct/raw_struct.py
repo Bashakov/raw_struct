@@ -4,37 +4,6 @@ from collections import OrderedDict
 from .utils import check_name_dup, fetch_fields, get_pack_factor
 
 
-_type_ctype_arry = type(ctypes.c_uint8 * 2)
-
-
-def _to_dict(self):
-    """ конвертация объекта в словарь """
-    res = OrderedDict()
-    for n, t in self._fields_:
-        v = getattr(self, n)
-        if not isinstance(v, bytes) and isinstance(t, _type_ctype_arry):
-            v = tuple(v)
-        res[n] = v
-    return res
-
-
-def _get_hash(struct_name):
-    """ генерация хеш для структуры """
-    def wrapper(self):
-        return hash(bytes(self)) ^ hash(struct_name)
-
-    return wrapper
-
-
-def _get_str(name):
-    """ генерация строкового описания структуры """
-    def wrapper(self):
-        values = ('%s=%s' % (n, v) for n, v in self.to_dict().items())
-        return '<%s: %s>' % (name, ', '.join(values))
-
-    return wrapper
-
-
 class MetaRawStruct(type(ctypes.Structure)):
     """ 
     Метакласс для структур, отображаемых в память
@@ -51,10 +20,6 @@ class MetaRawStruct(type(ctypes.Structure)):
         cls = super().__new__(meta, name, (ctypes.Structure, ), attrs)
 
         cls.size = ctypes.sizeof(cls)
-        cls.unpack = cls.from_buffer_copy
-        cls.to_dict = _to_dict
-        cls.__hash__ = _get_hash(name)
-        cls.__str__ = _get_str(name)
         return cls
 
     @classmethod
@@ -68,3 +33,29 @@ class RawStruct(metaclass=MetaRawStruct):
         для получения структуры отображаемой в память 
     """
     pass
+
+    def __hash__(self):
+        struct_name = self.__class__.__name__
+        return hash(bytes(self)) ^ hash(struct_name)
+
+    def __str__(self):
+        struct_name = self.__class__.__name__
+        values = ('%s=%s' % (n, v) for n, v in self.to_dict().items())
+        return '<%s: %s>' % (struct_name, ', '.join(values))
+
+    def to_dict(self):
+        type_ctype_arry = type(ctypes.c_uint8 * 2)
+        res = OrderedDict()
+        for n, t in self._fields_:
+            v = getattr(self, n)
+            if not isinstance(v, bytes) and isinstance(t, type_ctype_arry):
+                v = tuple(v)
+            res[n] = v
+        return res
+
+    def pack(self):
+        return bytes(self)
+
+    @classmethod
+    def unpack(cls, buf):
+        return cls.from_buffer_copy(buf)
