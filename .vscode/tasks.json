@@ -1,0 +1,61 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "sdist",
+            "type": "shell",
+            "command": "${config:python.pythonPath}",
+            "args": ["${workspaceFolder}\\setup.py", "sdist" ],
+            "presentation": {"reveal": "always", "panel": "shared", "clear": true },
+            "problemMatcher1": {
+                "pattern": {
+                    "regexp": "^(warning|error):(.*)$",
+                    "severity": 1,
+                    "message": 2,
+                    "file": 0,
+                    "line": 0,
+                    "column": 0
+                }
+            },
+            "group": "build"
+        },
+        {
+            "label": "editable install",
+            "type": "shell",
+            "command": "${config:python.pythonPath}",
+            "args": ["-m", "pip", "install", "-e", "." ],
+            "presentation": {"reveal": "always", "panel": "shared", "clear": true},
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "editable install global 36",
+            "type": "shell",
+            "command": "C:\\bin\\Python36\\Scripts\\pip.exe",
+            "args": ["install", "-e", "."],
+            "presentation": { "reveal": "always", "panel": "shared", "clear": true},
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "setup test",
+            "type": "shell",
+            "command": "${config:python.pythonPath}",
+            "args": ["${workspaceFolder}\\setup.py", "test"],
+            "presentation": {"reveal": "always", "panel": "shared", "clear": true},
+            "problemMatcher": [],
+            "group": "test"
+        },
+        {
+            "label": "coverage",
+            "type": "process",
+            "command": "${config:python.pythonPath}",
+            "args": ["-m", "pytest", "--cov=raw_struct", "--cov-report", "term-missing", "--cov-report", "html"],
+            "presentation": {"reveal": "always", "panel": "shared", "clear": true},
+            "problemMatcher": [],
+            "group": "test"
+        }
+    ]
+}

@@ -1,0 +1,8 @@
+*.egg-info/
+.venv/
+.coverage
+.pytest_cache/
+.eggs/
+__pycache__/
+htmlcov/
+settings.json
