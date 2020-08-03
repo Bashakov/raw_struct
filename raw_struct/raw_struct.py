@@ -61,12 +61,12 @@ class RawStruct(metaclass=MetaRawStruct):
     def unpack(cls, buf):
         return cls.from_buffer_copy(buf)
 
-    @staticmethod
-    def from_declaration(declaration, pack=None):
-        struct_name, fields = parse_declaration(declaration)
-        attrs = dict()
-        attrs['_fields_'] = fields
-        if pack is not None:
-            attrs['_pack_'] = pack
-        cls = type(struct_name, (RawStruct, ), attrs)
-        return cls
+
+def from_declaration(declaration, pack=None):
+    struct_name, fields = parse_declaration(declaration)
+    attrs = dict()
+    attrs['_fields_'] = fields
+    if pack is not None:
+        attrs['_pack_'] = pack
+    cls = type(struct_name, (RawStruct, ), attrs)
+    return cls

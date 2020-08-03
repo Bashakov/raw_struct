@@ -4,7 +4,7 @@ from ctypes import windll
 import pytest
 
 from raw_struct.parse_declaration import parse_declaration
-from raw_struct import RawStruct
+from raw_struct import from_declaration, from_c_to_python_declaration
 
 
 def test_t1():
@@ -36,7 +36,7 @@ def test_failed():
 
 
 def test_class():
-    Cls = RawStruct.from_declaration(''' 
+    Cls = from_declaration(''' 
         struct Test
         {
             LONG    id;
@@ -70,3 +70,25 @@ def test_class():
     assert j.name == b'1234'
     assert tuple(j.x) == (10, 20, 0)
     assert j.g == b'1234567890abcdef'
+
+
+def test_d2c():
+    decl = ''' 
+    struct Test
+    {
+        LONG    id;
+        char    name[4];
+        DWORD   x[3];
+        GUID    g;
+    }; '''
+    expt = '''\
+class Test(RawStruct)
+    _pack_ = 2
+    id = ctypes.c_long
+    name = ctypes.c_char * 4
+    x = ctypes.c_ulong * 3
+    g = ctypes.c_char * 16'''
+
+    text = from_c_to_python_declaration(decl, pack=2)
+    # print(text)
+    assert text == expt
