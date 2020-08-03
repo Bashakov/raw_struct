@@ -33,3 +33,22 @@ def test_array():
     assert 4 == a.a1[3]
     assert 5 == a.a2
     assert b'\x01\x02\x03\x04\x05' == bytes(a)
+
+
+def test_eq():
+    class A(RawStruct):
+        f = ctypes.c_uint32
+
+    class B(RawStruct):
+        f = ctypes.c_uint32
+
+    a1 = A(1)
+    a2 = A(2)
+    a11 = A(1)
+    b1 = B(1)
+    assert a1 != a2
+    assert a1 == a11
+    assert a1 != b1
+    assert bytes(a1) == bytes(a11)
+    assert bytes(a1) == bytes(b1)
+    assert bytes(a1) != bytes(a2)

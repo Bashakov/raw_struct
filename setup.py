@@ -11,7 +11,7 @@ def load_requirements(fname):
 
 setup(
     name='raw_struct',
-    version='0.1',
+    version='0.2',
     author='Andrey Bashakov',
     author_email='abashak@abisoft.spb.ru',
     url='https://github.com/Bashakov/raw_struct',

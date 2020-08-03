@@ -44,6 +44,20 @@ class RawStruct(metaclass=MetaRawStruct):
         values = ('%s=%s' % (n, v) for n, v in self.to_dict().items())
         return '<%s: %s>' % (struct_name, ', '.join(values))
 
+    def __eq__(self, another):
+        if not isinstance(another, self.__class__):
+            return False
+        for n, t in self._fields_:
+            v1 = getattr(self, n)
+            v2 = getattr(another, n)
+            if v1 != v2:
+                return False
+        return True
+
+    def __ne__(self, another):
+        return not self == another
+
+
     def to_dict(self):
         type_ctype_arry = type(ctypes.c_uint8 * 2)
         res = OrderedDict()
