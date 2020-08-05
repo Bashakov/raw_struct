@@ -19,7 +19,7 @@ def test_derived():
     assert 4 == b.size
     assert b'\x12\x34' == bytes(a)
     assert b'\x56\x78\x9a\xbc' == bytes(b)
-    a = A.unpack(b)
+    a = A.unpack(b, offset=0)
     assert 0x56 == a.a1
     assert 0x78 == a.a2
 

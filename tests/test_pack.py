@@ -18,8 +18,8 @@ def test_pack_same():
     assert b'\x78\x56\x34\x12' == bytes(c1)
     assert b'\x78\x56\x34\x12' == bytes(c2)
 
-    c1 = C1.unpack(b'12345678')
-    c2 = C2.unpack(b'12345678')
+    c1 = C1.unpack(b'1234')
+    c2 = C2.unpack(b'1234')
 
     assert 0x34333231 == c1.c
     assert 0x34333231 == c2.c

@@ -72,8 +72,36 @@ class RawStruct(metaclass=MetaRawStruct):
         return bytes(self)
 
     @classmethod
-    def unpack(cls, buf):
-        return cls.from_buffer_copy(buf)
+    def unpack(cls, buffer, offset=None):
+        if isinstance(buffer, ctypes.Structure):
+            buf_size = ctypes.sizeof(buffer)
+        else:
+            buf_size = len(buffer)
+
+        if offset is None:
+            if buf_size != cls.size:
+                raise ValueError(
+                    "Unpack [%s] wrong buffer size: %d instead %d bytes" %
+                    (cls.__name__, buf_size, cls.size))
+            else:
+                offset = 0
+        else:
+            assert isinstance(offset, int) and offset >= 0
+            if buf_size - offset < cls.size:
+                raise ValueError(
+                    "Buffer size for [%s] too small: %d (offset: %d) instead of %d bytes"
+                    % (cls.__name__, buf_size, offset, cls.size))
+        return cls.from_buffer_copy(buffer, offset)
+
+    @classmethod
+    def iter_unpack(cls, buffer, offset=0):
+        if isinstance(buffer, ctypes.Structure):
+            buf_size = ctypes.sizeof(buffer)
+        else:
+            buf_size = len(buffer)
+
+        for o in range(offset, buf_size - cls.size + 1, cls.size):
+            yield cls.from_buffer_copy(buffer, o)
 
 
 def from_declaration(declaration, pack=None):
