@@ -82,7 +82,7 @@ def test_d2c():
         GUID    g;
     }; '''
     expt = '''\
-class Test(RawStruct)
+class Test(RawStruct):
     _pack_ = 2
     id = ctypes.c_long
     name = ctypes.c_char * 4

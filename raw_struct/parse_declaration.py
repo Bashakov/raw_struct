@@ -58,7 +58,7 @@ def from_c_to_python_declaration(declaration, pack=None):
     """
     ofs = '    '
     struct_name, fields = parse_declaration(declaration)
-    res = ['class %s(RawStruct)' % struct_name]
+    res = ['class %s(RawStruct):' % struct_name]
     if pack:
         res.append('%s_pack_ = %d' % (ofs, pack))
     for name, tp in fields:
