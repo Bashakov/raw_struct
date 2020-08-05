@@ -1,6 +1,8 @@
 from setuptools import setup, find_packages
 from pkg_resources import parse_requirements
 
+import raw_struct
+
 
 def load_requirements(fname):
     requirements = []
@@ -9,9 +11,10 @@ def load_requirements(fname):
         requirements.append('{}{}{}'.format(req.name, extras, req.specifier))
     return requirements
 
+
 setup(
     name='raw_struct',
-    version='0.2',
+    version=raw_struct.__version__,
     author='Andrey Bashakov',
     author_email='abashak@abisoft.spb.ru',
     url='https://github.com/Bashakov/raw_struct',
