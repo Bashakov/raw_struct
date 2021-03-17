@@ -7,3 +7,5 @@ __pycache__/
 htmlcov/
 settings.json
 dist/
+/1.py
+/coverage.xml
