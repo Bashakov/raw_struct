@@ -76,19 +76,33 @@ def test_d2c():
     decl = ''' 
     struct Test
     {
-        LONG    id;
+        LONG    id:3;
         char    name[4];
-        DWORD   x[3];
+        DWORD   x;
         GUID    g;
     }; '''
     expt = '''\
 class Test(RawStruct):
     _pack_ = 2
-    id = ctypes.c_long
+    id = ctypes.c_long, 3
     name = ctypes.c_char * 4
-    x = ctypes.c_ulong * 3
+    x = ctypes.c_ulong
     g = ctypes.c_char * 16'''
 
     text = from_c_to_python_declaration(decl, pack=2)
     # print(text)
     assert text == expt
+
+def test_parse_bitfield():
+    struct_name, fields = parse_declaration(''' 
+    struct Test
+    {
+        LONG    id:2;
+        int     num[2];
+        char    name:3;
+    }; ''')
+    assert struct_name == 'Test'
+    assert len(fields) == 3
+    assert fields[0] == ('id', ctypes.c_long, 2)
+    assert fields[1] == ('num', ctypes.c_int*2)
+    assert fields[2] == ('name', ctypes.c_char, 3)

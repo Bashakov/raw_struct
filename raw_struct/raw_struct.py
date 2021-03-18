@@ -61,7 +61,7 @@ class RawStruct(metaclass=MetaRawStruct):
     def to_dict(self):
         type_ctype_arry = type(ctypes.c_uint8 * 2)
         res = OrderedDict()
-        for n, t in self._fields_:
+        for n, t, *bits in self._fields_:
             v = getattr(self, n)
             if not isinstance(v, bytes) and isinstance(t, type_ctype_arry):
                 v = tuple(v)

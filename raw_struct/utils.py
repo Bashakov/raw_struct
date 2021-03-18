@@ -17,7 +17,9 @@ def fetch_fields(bases, attrs):
     for n, t in attrs.items():
         if isinstance(t, _ctype_types):
             fields.append((n, t))
-    for n, t in fields:
+        if isinstance(t, tuple) and len(t) == 2 and isinstance(t[0], _ctype_types) and isinstance(t[1], int):
+            fields.append((n, t[0], t[1]))   # bit field
+    for n, *_ in fields:
         if n in attrs:
             del attrs[n]
     return fields
@@ -26,7 +28,7 @@ def fetch_fields(bases, attrs):
 def check_name_dup(struct_name, fields):
     """ проверяем на дублирование имен атрибутов """
     s = set()
-    for n, v in fields:
+    for n, *_ in fields:
         if n in s:
             raise TypeError('Struct [%s], duplicate [%s]' % (struct_name, n))
         s.add(n)

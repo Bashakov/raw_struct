@@ -32,17 +32,30 @@ def parse_declaration(declaration):
         raise Exception("bad struct definition:" + declaration)
     struct_name = p.group('name')
 
-    line_pattern = '\s*(?P<type>\w+)\s+(?P<name>\w+)\s*(?:\[(?P<count>\d+)\])?\s*;'
+    parse_line = re.compile(r"""
+        \s*
+        (?P<type>\w+)\s+
+        (?P<name>\w+)\s*
+        (?:\[(?P<count>\d+)\])?
+        (?:\:(?P<bits>\d+))?
+        \s*;
+        """,
+        re.VERBOSE
+        )
+
     fields = []
-    for g in re.finditer(line_pattern, p.group('items')):
-        field_name, field_type, item_count = g.group('name', 'type', 'count')
+    for g in parse_line.finditer(p.group('items')):
+        field_name, field_type, item_count, bit_field = g.group('name', 'type', 'count', 'bits')
 
         if field_type in _spec_types:
             field_type, item_count = _spec_types[field_type]
         field_type = _type2ctype[field_type]
         if item_count:
             field_type = field_type * int(item_count)
-        fields.append((field_name, field_type))
+        if bit_field:
+            fields.append((field_name, field_type, int(bit_field)))
+        else:
+            fields.append((field_name, field_type))
     return struct_name, fields
 
 
@@ -61,10 +74,13 @@ def from_c_to_python_declaration(declaration, pack=None):
     res = ['class %s(RawStruct):' % struct_name]
     if pack:
         res.append('%s_pack_ = %d' % (ofs, pack))
-    for name, tp in fields:
+    for name, tp, *bits in fields:
         str_type = ''
         if isinstance(tp, _ctype_array):
             str_type = "%s * %d" % (tp._type_.__name__, tp._length_)
+        elif bits:
+            assert(len(bits) == 1)
+            str_type = "%s, %d" % (tp.__name__, bits[0])
         else:
             str_type = tp.__name__
         res.append('%s%s = ctypes.%s' % (ofs, name, str_type))
